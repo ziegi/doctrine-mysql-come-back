@@ -10,21 +10,21 @@ trait ServerGoneAwayExceptionsAwareTrait
     /**
      * @var array
      */
-    protected $goneAwayExceptions = array(
-        2002, // => 'Can\'t connect to local MySQL server through socket',
-        2003, // => 'Can\'t connect to MySQL server on',
-        2005, // => 'Unknown MySQL server host',
-        2006, // => 'MySQL server has gone away',
-        2013, // => 'Lost connection to MySQL server during query',
-        2055, // => 'Lost connection to MySQL server at',
+    protected $goneAwayExceptionsMysql = array(
+        2002,   // 'Can\'t connect to local MySQL server through socket'
+        2003,   // 'Can\'t connect to MySQL server on'
+        2005,   // 'Unknown MySQL server host'
+        2006,   // 'MySQL server has gone away'
+        2013,   // 'Lost connection to MySQL server during query'
+        2055,   // 'Lost connection to MySQL server at'
     );
 
     /**
      * @var array
      */
-    protected $goneAwayInUpdateExceptions = array(
-        2006, // => 'MySQL server has gone away',
-        2013, // => 'Lost connection to MySQL server during query',
+    protected $goneAwayInUpdateExceptionsMysql = array(
+        2006,   // 'MySQL server has gone away'
+        2013,   // 'Lost connection to MySQL server during query'
     );
 
     /**
@@ -35,9 +35,14 @@ trait ServerGoneAwayExceptionsAwareTrait
     public function isGoneAwayException(\Exception $exception)
     {
         $message = $exception->getMessage();
+
+        // all relevant exceptions implement the getErrorCode() function
+        // while the getCode() might deliver similar results for other exceptions i do not care about them here
+        if (!method_exists($exception, 'getErrorCode'))
+            return false;
         $errorcode = $exception->getErrorCode();
 
-        foreach ($this->goneAwayExceptions as $exceptionCode) {
+        foreach ($this->goneAwayExceptionsMysql as $exceptionCode) {
             if ($exceptionCode === $errorcode) {
                 return true;
             }
@@ -55,7 +60,13 @@ trait ServerGoneAwayExceptionsAwareTrait
     {
         $message = $exception->getMessage();
 
-        foreach ($this->goneAwayInUpdateExceptions as $exceptionCode) {
+        // all relevant exceptions implement the getErrorCode() function
+        // while the getCode() might deliver similar results for other exceptions i do not care about them here
+        if (!method_exists($exception, 'getErrorCode'))
+            return false;
+        $errorcode = $exception->getErrorCode();
+        
+        foreach ($this->goneAwayInUpdateExceptionsMysql as $exceptionCode) {
             if ($exceptionCode === $errorcode) {
                 return true;
             }
