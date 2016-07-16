@@ -64,6 +64,7 @@ class Statement implements \IteratorAggregate, DriverStatement
                     $this->createStatement();
                     ++$attempt;
                     $retry = true;
+                    sleep($this->conn->getSecondsBeforeRetry());
                 } else {
                     throw $e;
                 }
