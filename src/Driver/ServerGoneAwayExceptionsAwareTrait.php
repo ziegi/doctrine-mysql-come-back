@@ -35,7 +35,6 @@ trait ServerGoneAwayExceptionsAwareTrait
     public function isGoneAwayException(\Exception $exception)
     {
         $message = $exception->getMessage();
-        $errorcode = $exception->getErrorCode();
 
         foreach ($this->goneAwayExceptions as $exceptionCode) {
             if ($exceptionCode === $errorcode) {
