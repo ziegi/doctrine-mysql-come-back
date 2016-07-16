@@ -24,6 +24,7 @@ trait ServerGoneAwayExceptionsAwareTrait
      */
     protected $goneAwayInUpdateExceptions = array(
         2006, // => 'MySQL server has gone away',
+        2013, // => 'Lost connection to MySQL server during query',
     );
 
     /**
