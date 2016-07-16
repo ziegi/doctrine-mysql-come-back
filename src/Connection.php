@@ -19,6 +19,11 @@ class Connection extends \Doctrine\DBAL\Connection
     protected $reconnectAttempts = 0;
 
     /**
+     * @var int
+     */
+    protected $secondsBeforeRetry = 1;
+
+    /**
      * @var \ReflectionProperty|null
      */
     private $selfReflectionNestingLevelProperty;
@@ -45,6 +50,10 @@ class Connection extends \Doctrine\DBAL\Connection
 
         if (isset($params['driverOptions']['x_reconnect_attempts'])) {
             $this->reconnectAttempts = (int) $params['driverOptions']['x_reconnect_attempts'];
+        }
+
+        if (isset($params['driverOptions']['x_seconds_before_retry'])) {
+            $this->secondsBeforeRetry = (int) $params['driverOptions']['x_seconds_before_retry'];
         }
 
         parent::__construct($params, $driver, $config, $eventManager);
@@ -74,6 +83,7 @@ class Connection extends \Doctrine\DBAL\Connection
                     $this->close();
                     ++$attempt;
                     $retry = true;
+                    sleep($this->secondsBeforeRetry);
                 } else {
                     throw $e;
                 }
@@ -117,6 +127,7 @@ class Connection extends \Doctrine\DBAL\Connection
                     $this->close();
                     ++$attempt;
                     $retry = true;
+                    sleep($this->secondsBeforeRetry);
                 } else {
                     throw $e;
                 }
@@ -149,6 +160,7 @@ class Connection extends \Doctrine\DBAL\Connection
                     $this->close();
                     ++$attempt;
                     $retry = true;
+                    sleep($this->secondsBeforeRetry);
                 } else {
                     throw $e;
                 }
@@ -182,6 +194,7 @@ class Connection extends \Doctrine\DBAL\Connection
                     }
                     ++$attempt;
                     $retry = true;
+                    sleep($this->secondsBeforeRetry);
                 } else {
                     throw $e;
                 }
@@ -221,6 +234,18 @@ class Connection extends \Doctrine\DBAL\Connection
     {
         // returns the actual statement
         return parent::prepare($sql);
+    }
+
+    /**
+     * do not use, only used by Statement-class
+     * needs to be public for access from the Statement-class.
+     *
+     * @internal
+     */
+    public function getSecondsBeforeRetry()
+    {
+        // returns the actual statement
+        return $this->secondsBeforeRetry;
     }
 
     /**
