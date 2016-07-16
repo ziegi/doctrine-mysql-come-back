@@ -11,15 +11,20 @@ trait ServerGoneAwayExceptionsAwareTrait
      * @var array
      */
     protected $goneAwayExceptions = array(
-        'MySQL server has gone away',
-        'Lost connection to MySQL server during query',
+        2002, // => 'Can\'t connect to local MySQL server through socket',
+        2003, // => 'Can\'t connect to MySQL server on',
+        2005, // => 'Unknown MySQL server host',
+        2006, // => 'MySQL server has gone away',
+        2013, // => 'Lost connection to MySQL server during query',
+        2055, // => 'Lost connection to MySQL server at',
     );
 
     /**
      * @var array
      */
     protected $goneAwayInUpdateExceptions = array(
-        'MySQL server has gone away',
+        2006, // => 'MySQL server has gone away',
+        2013, // => 'Lost connection to MySQL server during query',
     );
 
     /**
@@ -30,9 +35,10 @@ trait ServerGoneAwayExceptionsAwareTrait
     public function isGoneAwayException(\Exception $exception)
     {
         $message = $exception->getMessage();
+        $errorcode = $exception->getErrorCode();
 
-        foreach ($this->goneAwayExceptions as $goneAwayException) {
-            if (stripos($message, $goneAwayException) !== false) {
+        foreach ($this->goneAwayExceptions as $exceptionCode) {
+            if ($exceptionCode === $errorcode) {
                 return true;
             }
         }
@@ -49,8 +55,8 @@ trait ServerGoneAwayExceptionsAwareTrait
     {
         $message = $exception->getMessage();
 
-        foreach ($this->goneAwayInUpdateExceptions as $goneAwayException) {
-            if (stripos($message, $goneAwayException) !== false) {
+        foreach ($this->goneAwayInUpdateExceptions as $exceptionCode) {
+            if ($exceptionCode === $errorcode) {
                 return true;
             }
         }
