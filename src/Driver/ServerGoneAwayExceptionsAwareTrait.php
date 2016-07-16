@@ -35,7 +35,6 @@ trait ServerGoneAwayExceptionsAwareTrait
     public function isGoneAwayException(\Exception $exception)
     {
         $message = $exception->getMessage();
-        $errorcode = $exception->getErrorCode();
 
         // all relevant exceptions implement the getErrorCode() function
         // while the getCode() might deliver similar results for other exceptions i do not care about them here
